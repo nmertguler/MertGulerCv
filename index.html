@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>N. Mert Guler - Game Developer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0c;
+      --bg2: #111115;
+      --bg3: #18181f;
+      --border: #2a2a35;
+      --accent: #e8ff47;
+      --accent2: #7c6cff;
+      --text: #e8e8f0;
+      --muted: #6b6b80;
+      --mono: 'Space Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 3rem;
+      background: rgba(10,10,12,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      gap: 1.5rem;
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    /* LANG SWITCHER */
+    .lang-switcher {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .lang-btn {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      padding: 0.38rem 0.8rem;
+      background: transparent;
+      color: var(--muted);
+      border: none;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: all 0.2s;
+      line-height: 1;
+    }
+
+    .lang-btn:first-child { border-right: 1px solid var(--border); }
+
+    .lang-btn.active {
+      background: var(--accent);
+      color: #0a0a0c;
+      font-weight: 700;
+    }
+
+    .lang-btn:not(.active):hover { color: var(--accent); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 0 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.25;
+      mask-image: radial-gradient(ellipse at 60% 50%, black 30%, transparent 80%);
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(124,108,255,0.12) 0%, transparent 70%);
+      right: -100px; top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; max-width: 750px; }
+
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.1s;
+    }
+
+    .hero-name {
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards 0.25s;
+    }
+
+    .hero-name .accent-name { color: var(--accent); display: inline-block; }
+
+    .hero-title {
+      font-family: var(--mono);
+      font-size: 1rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards 0.4s;
+    }
+
+    .hero-bio {
+      font-size: 1.05rem;
+      color: #aaa;
+      max-width: 520px;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards 0.55s;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards 0.7s;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.75rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary { background: var(--accent); color: #0a0a0c; font-weight: 700; }
+    .btn-primary:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,255,71,0.2); }
+    .btn-ghost { border: 1px solid var(--border) !important; color: var(--text); background: transparent; }
+    .btn-ghost:hover { border-color: var(--accent) !important; color: var(--accent); transform: translateY(-2px); }
+
+    /* SECTIONS */
+    section { padding: 6rem 3rem; max-width: 1100px; margin: 0 auto; }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 3rem;
+      color: var(--text);
+    }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    /* ABOUT */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+
+    .about-text p { color: #999; font-size: 1rem; line-height: 1.9; margin-bottom: 1.25rem; }
+
+    .tech-list { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.5rem; }
+
+    .tech-tag {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 0.35rem 0.85rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      transition: all 0.2s;
+    }
+    .tech-tag:hover { border-color: var(--accent2); color: var(--accent2); }
+
+    /* TIMELINE */
+    .timeline { display: flex; flex-direction: column; }
+
+    .timeline-item {
+      padding: 1.5rem 0 1.5rem 1.75rem;
+      border-left: 1px solid var(--border);
+      position: relative;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -4px; top: 1.85rem;
+      width: 7px; height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    .timeline-date { font-family: var(--mono); font-size: 0.7rem; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.35rem; }
+    .timeline-role { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+    .timeline-company { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); margin-bottom: 0.6rem; }
+    .timeline-desc { font-size: 0.9rem; color: #888; line-height: 1.7; }
+
+    /* GAMES */
+    .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+
+    .game-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      position: relative;
+      transition: all 0.3s;
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+      color: inherit;
+    }
+
+    .game-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(124,108,255,0.06), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .game-card:hover { border-color: var(--accent2); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.4); }
+    .game-card:hover::before { opacity: 1; }
+
+    .game-thumb {
+      width: 100%; height: 160px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      font-size: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-thumb-label {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 0.5rem;
+      background: rgba(0,0,0,0.6);
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-align: center;
+    }
+
+    .game-engine { font-family: var(--mono); font-size: 0.65rem; color: var(--accent2); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .game-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.01em; }
+    .game-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.6; margin-bottom: 1.25rem; }
+    .game-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .game-tag { font-family: var(--mono); font-size: 0.65rem; padding: 0.2rem 0.6rem; background: var(--bg3); border: 1px solid var(--border); color: var(--muted); letter-spacing: 0.06em; }
+
+    /* CONTACT */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+    .contact-info p { color: #999; font-size: 1rem; line-height: 1.8; margin-bottom: 2rem; }
+    .social-links { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.9rem 1.25rem;
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      transition: all 0.2s;
+      letter-spacing: 0.05em;
+    }
+
+    .social-link:hover { border-color: var(--accent); color: var(--accent); transform: translateX(6px); }
+    .social-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+    .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    .form-group label { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+    .form-group input,
+    .form-group textarea {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.85rem 1rem;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus { border-color: var(--accent2); }
+    .form-group textarea { min-height: 130px; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer p { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.06em; }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.2rem; }
+      .nav-right { gap: 1.2rem; }
+      .hero { padding: 0 1.5rem; }
+      section { padding: 4rem 1.5rem; }
+      .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      footer { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+
+    @media (max-width: 520px) {
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#" id="nav-logo">// N. Mert Guler</a>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="#about"   id="nav-about">About</a></li>
+        <li><a href="#games"   id="nav-games">Games</a></li>
+        <li><a href="#contact" id="nav-contact">Contact</a></li>
+      </ul>
+      <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn"        onclick="setLang('tr')">TR</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" style="max-width:100%; padding-top:6rem;">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <p class="hero-tag"   id="hero-tag">// Game Developer & Designer</p>
+      <h1 class="hero-name" id="hero-name">
+        Hello,<br>I'm <span class="accent-name">N. Mert Guler</span>
+      </h1>
+      <p class="hero-title">Unity · Mobile Games · Pc Games</p>
+      <p class="hero-bio"   id="hero-bio">
+        Over the years, I've built games across different genres with a passion for game development. From mechanic design to level design, from coding to storytelling. I love touching every layer of a game.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#games"   id="cta-primary">See My Games →</a>
+        <a class="btn btn-ghost"   href="#contact" id="cta-ghost">Get in Touch</a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ABOUT -->
+  <section id="about">
+    <p class="section-label reveal" id="lbl-about">// 001 — about me</p>
+    <h2 class="section-title reveal" id="ttl-about">A Bit About Me</h2>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p id="about-p1">
+          I have been developing games since 2021. I have taken part in every stage of game development, and I try to stay involved in all of them. My goal is to become a good game developer. I love developing games and trying new things.
+        </p>
+        <p id="about-p2">
+          I prefer managing both the technical and creative sides together. While coding, I think about design; while designing, I think about code. This cross-disciplinary perspective is the most important element shaping my games.
+        </p>
+        <div class="tech-list">
+          <span class="tech-tag">Unity</span>
+          <span class="tech-tag">C#</span>
+          <span class="tech-tag">Git</span>
+          <span class="tech-tag">Mobile Games</span>
+          <span class="tech-tag">Puzzle Games</span>
+          <span class="tech-tag">Pc Games</span>
+          <span class="tech-tag">Simulation Games</span>
+
+        </div>
+      </div>
+
+      <div class="reveal">
+        <div class="timeline">
+
+          <div class="timeline-item">
+            <p class="timeline-date">June 2024 - Now</p>
+            <p class="timeline-role">Solo Game Developer</p>
+            <p class="timeline-company">Mynoki Games / Ankara</p>
+            <p class="timeline-desc">Working on; <br>
+              Mobile Puzzle Games<br>
+              Game Design <br>
+              Ideation and Prototyping <br>
+              Feature Development <br>
+              Game Polish & Optimization <br>
+              Game Publishing <br>
+
+            </p>
+          </div>
+          <div class="timeline-item">
+            <p class="timeline-date">April 2023 - June 2024 (15 Months)</p>
+            <p class="timeline-role">Game Developer</p>
+            <p class="timeline-company">Optimus Game Studio / Ankara</p>
+            <p class="timeline-desc">Working on; <br>
+              Computer Games <br>
+              Big Maps and Optimization <br>
+              Steam marketing <br>
+            </p>
+          </div>
+          <div class="timeline-item">
+            <p class="timeline-date">June 2021 - April 2023 (23 Months)</p>
+            <p class="timeline-role">Game Developer</p>
+            <p class="timeline-company">Ruff Games / Izmir</p>
+            <p class="timeline-desc">Working on; <br>
+              Casual games <br>
+              Puzzle games prototyping and publishing <br>
+              Liveops - SDK - A/B Test - FireBase <br>
+            </p>
+          </div>
+          <div class="timeline-item">
+            <p class="timeline-date">March 2021 - June 2021 (4 months)</p>
+            <p class="timeline-role">Unity Game Developer Intern</p>
+            <p class="timeline-company">Cactus Game Studio / Izmir</p>
+            <p class="timeline-desc">Working on prototyping Hypercasual games</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- GAMES -->
+  <section id="games">
+    <p class="section-label reveal" id="lbl-games">// 002 — projects</p>
+    <h2 class="section-title reveal" id="ttl-games">My Games</h2>
+    <div class="games-grid">
+
+      <a class="game-card reveal" href="https://appmagic.rocks/google-play/screw-puzzle/com.ruffgames.screw" target="_blank">
+        <div class="game-thumb">
+          <img src="https://images.appmagic.rocks/?uri=https://play-lh.googleusercontent.com/BOFPIddBO59kYltnLe6p9jcq7wE-DUVxLHL62keTgebXc-NMuUoSx-UvkCMGHaI0ch0=s98-c" alt="Screw Puzzle Screenshot" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <p class="game-engine">Unity · 2022</p>
+        <h3 class="game-title">Screw Puzzle</h3>
+        <p class="game-desc" id="g1-desc">A pioneer of the screw puzzle genre, featuring 250 levels designed with a custom-built editor. The project includes 15 unique interactive elements and defined the genre’s standards through organic growth prior to its official release.</p>
+        <div class="game-tags">
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">3D</span>
+          <span class="game-tag">Mobile</span>
+        </div>
+      </a>
+
+      <a class="game-card reveal" href="#" target="_blank">
+        <div class="game-thumb">
+          <img src="https://images.appmagic.rocks/?uri=https://play-lh.googleusercontent.com/O5lPc9-7nBs05PMH9_a96dkOPX69Aqyw081DYjFoVs4-KSKcHTCZh0r-pmGBzwndtJY=s98-c" alt="Angry Blocks Screenshot" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <p class="game-engine">Unity · 2026</p>
+        <h3 class="game-title">Angry Blocks</h3>
+        <p class="game-desc" id="g2-desc">A 100,000+ download project featuring 300+ levels and 30+ mechanics developed over 6 months.
+           I handled all development stages and served as the lead developer post-launch, managing publisher relations and scaling the project through technical updates. </p>
+        <div class="game-tags">
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">3D</span>
+          <span class="game-tag">Mobile</span>
+        </div>
+      </a>
+
+      <a class="game-card reveal" href="#" target="_blank">
+        <div class="game-thumb">
+          <img src="https://images.appmagic.rocks/?uri=https://play-lh.googleusercontent.com/g1-Nyd5xhxcu1A0mAVuPFbThHzGZdw2jPse3oT1Tmc-uVIIYfgyiYH5OPFiAJRrQjPKS=s98-c" alt="Hidden World 3D Screenshot" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <p class="game-engine">Unity · 2022</p>
+        <h3 class="game-title">Hidden World 3D </h3>
+        <p class="game-desc" id="g3-desc">A prototype project reimagining the hidden object genre in 3D. I handled all software development and game design, focusing on depth-based mechanics, perspective-driven gameplay, and user interaction prototyping.</p>
+        <div class="game-tags">
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">3D</span>
+          <span class="game-tag">Hidden Objects</span>
+        </div>
+      </a>
+
+      <a class="game-card reveal" href="#" target="_blank">
+        <div class="game-thumb">
+          <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2964300/header.jpg?t=1727814382" alt="City Bus Simulator 2024 Screenshot" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <p class="game-engine">Unity · 2024</p>
+        <h3 class="game-title">City Bus Simulator 2024 </h3>
+        <p class="game-desc" id="g4-desc">Developed an optimized pedestrian system for a large-scale map using Unity DOTS. I was responsible for environment design, map optimization, and the development of driving mechanics, passenger systems, and core gameplay elements.</p>
+        <div class="game-tags">
+          <span class="game-tag">Simulation</span>
+          <span class="game-tag">3D</span>
+          <span class="game-tag">Pc Game</span>
+        </div>
+      </a>
+
+      <a class="game-card reveal" href="#" target="_blank">
+        <div class="game-thumb">
+          <img src="https://images.appmagic.rocks/?uri=https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/8a/84/bc/8a84bc44-c3a2-0352-7b6c-ab1fa0739b2e/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/0x98h.jpg" alt="Load The Passangers Screenshot" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <p class="game-engine">Unity · 2024</p>
+        <h3 class="game-title">Load The Passangers</h3>
+        <p class="game-desc" id="g5-desc">I independently developed the game concept, progression, and level designs. I also created all artistic references and visual guidelines required for the modeling and asset production stages.</p>
+        <div class="game-tags">
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">3D</span>
+          <span class="game-tag">Mobile</span>
+        </div>
+      </a>
+
+      <a class="game-card reveal" href="#" target="_blank">
+        <div class="game-thumb">
+          <img src="https://images.appmagic.rocks/?uri=https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/de/92/4e/de924e60-595e-01d3-769f-797977e8013c/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/0x98h.jpg" alt="Colorful Bottle Sorting Screenshot" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <p class="game-engine">Unity · 2024</p>
+        <h3 class="game-title">Colorful Bottle Sorting</h3>
+        <p class="game-desc" id="g6-desc">I independently developed the core concept, progression systems, and level designs. Additionally, I created all artistic references and visual concepts required for the 3D modeling and asset production stages.</p>
+        <div class="game-tags">
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">3D</span>
+          <span class="game-tag">Sorting</span>
+        </div>
+      </a>
+
+      <a class="game-card reveal" href="#" target="_blank">
+        <div class="game-thumb">
+          <img src="https://images.appmagic.rocks/?uri=https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/76/e5/a7/76e5a7c5-7fd0-ada9-869d-9af9e7b5ffae/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/0x98h.jpg" alt="Bottle Catcher Screenshot" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <p class="game-engine">Unity · 2024</p>
+        <h3 class="game-title">Bottle Catcher</h3>
+        <p class="game-desc" id="g7-desc"> I independently developed the game concept, progression, and level designs. I also created all artistic references and visual guidelines required for the modeling and asset production stages.</p>
+        <div class="game-tags">
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">3D</span>
+          <span class="game-tag">Mobile</span>
+        </div>
+      </a>
+
+      <a class="game-card reveal" href="#" target="_blank">
+        <div class="game-thumb">
+          <img src="https://images.appmagic.rocks/?uri=https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/bc/8f/b5/bc8fb5c8-5bd9-5bd2-4eac-9e5004d30a19/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/0x98h.jpg" alt="Unload The Cargo Screenshot" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <p class="game-engine">Unity · 2024</p>
+        <h3 class="game-title">Unload The Cargo</h3>
+        <p class="game-desc" id="g8-desc">I independently developed the game concept, progression, and level designs. I also created all artistic references and visual guidelines required for the modeling and asset production stages.</p>
+        <div class="game-tags">
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">3D</span>
+          <span class="game-tag">Mobile</span>
+        </div>
+      </a>
+
+      <a class="game-card reveal" href="#" target="_blank">
+        <div class="game-thumb">
+          <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3676450/267f9ef9db7576b27bc245567af37a09b153e9eb/header.jpg?t=1753421780" alt="Corridor Exit 8 Screenshot" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <p class="game-engine">Unity · 2025</p>
+        <h3 class="game-title">Corridor Exit 8</h3>
+        <p class="game-desc" id="g9-desc">I managed the entire idea, art, and marketing process for this project. I handled the development cycle by implementing updates based on user feedback and direct community engagement.</p>
+        <div class="game-tags">
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">3D</span>
+          <span class="game-tag">Pc Game</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <p class="section-label reveal" id="lbl-contact">// 003 — contact</p>
+    <h2 class="section-title reveal" id="ttl-contact">Get In Touch</h2>
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <p id="contact-intro">Feel free to reach out for project offers, collaborations, or to talk games.</p>
+        <div class="social-links">
+          <a class="social-link" href="mailto:mertg1129@gmail.com">
+            <span class="social-icon">✉</span> mertg1129@gmail.com
+          </a>
+          <a class="social-link" href="https://github.com/nmertguler" target="_blank">
+            <span class="social-icon">⌥</span> github.com/nmertguler
+          </a>
+          <a class="social-link" href="https://www.linkedin.com/in/nurullahmertguler/" target="_blank">
+            <span class="social-icon">in</span> linkedin.com/in/nurullahmertguler
+          </a>
+        </div>
+      </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2024 <a href="#">N. Mert Guler</a>. <span id="footer-rights">All rights reserved.</span></p>
+    <p id="footer-credit">Designed & Developed by N. Mert Guler</p>
+  </footer>
+
+  <script>
+    /* ─────────────── TRANSLATIONS ─────────────── */
+    const T = {
+      en: {
+        title:          'N. Mert Guler - Game Developer',
+        logo:           '// N. Mert Guler',
+        'nav-about':    'About',
+        'nav-games':    'Games',
+        'nav-contact':  'Contact',
+        'hero-tag':     '// game developer & designer',
+        'hero-name':    'Hello,<br>I\'m <span class="accent-name">N. Mert Guler</span>',
+        'hero-bio':     "Over the years, I've built games across different genres with a passion for game development. From mechanic design to level design, from coding to storytelling. I love touching every layer of a game.",
+        'cta-primary':  'See My Games →',
+        'cta-ghost':    'Get in Touch',
+        'lbl-about':    '// 001 — about me',
+        'ttl-about':    'A Bit About Me',
+        'about-p1':     'I have been developing games since 2021. I have taken part in every stage of game development, and I try to stay involved in all of them. My goal is to become a good game developer. I love developing games and trying new things.',
+        'about-p2':     'I prefer managing both the technical and creative sides together. While coding, I think about design; while designing, I think about code. This cross-disciplinary perspective is the most important element shaping my games.',
+        'lbl-games':    '// 002 — projects',
+        'ttl-games':    'My Games',
+        'g1-thumb':     'ADD SCREENSHOT / COVER',
+        'g1-desc':      'A pioneer of the screw puzzle genre, featuring 250 levels designed with a custom-built editor. The project includes 15 unique interactive elements and defined the genre’s standards through organic growth prior to its official release.',
+        'g2-thumb':     'ADD SCREENSHOT / COVER',
+        'g2-desc':      'A 100,000+ download project featuring 300+ levels and 30+ mechanics developed over 6 months. I handled all development stages and served as the lead developer post-launch, managing publisher relations and scaling the project through technical updates.',
+        'g3-thumb':     'ADD SCREENSHOT / COVER',
+        'g3-desc':      'A prototype project reimagining the hidden object genre in 3D. I handled all software development and game design, focusing on depth-based mechanics, perspective-driven gameplay, and user interaction prototyping.',
+        'g4-thumb':     'ADD SCREENSHOT / COVER',
+        'g4-desc':      'Developed an optimized pedestrian system for a large-scale map using Unity DOTS. I was responsible for environment design, map optimization, and the development of driving mechanics, passenger systems, and core gameplay elements.',
+        'g5-thumb':     'ADD SCREENSHOT / COVER',
+        'g5-desc':      'I independently developed the game concept, progression, and level designs. I also created all artistic references and visual guidelines required for the modeling and asset production stages.',
+        'g6-thumb':     'ADD SCREENSHOT / COVER',
+        'g6-desc':      'I independently developed the core concept, progression systems, and level designs. Additionally, I created all artistic references and visual concepts required for the 3D modeling and asset production stages.',
+        'g7-thumb':     'ADD SCREENSHOT / COVER',
+        'g7-desc':      'I independently developed the game concept, progression, and level designs. I also created all artistic references and visual guidelines required for the modeling and asset production stages.',
+        'g8-thumb':     'ADD SCREENSHOT / COVER',
+        'g8-desc':      'I independently developed the game concept, progression, and level designs. I also created all artistic references and visual guidelines required for the modeling and asset production stages.',
+        'g9-thumb':     'ADD SCREENSHOT / COVER',
+        'g9-desc':      'I managed the entire idea, art, and marketing process for this project. I handled the development cycle by implementing updates based on user feedback and direct community engagement.',
+        'lbl-contact':  '// 003 — contact',
+        'ttl-contact':  'Get In Touch',
+        'contact-intro':'Feel free to reach out for project offers, collaborations, or to talk games.',
+        'form-name-label':'N. Mert Guler',
+        'form-email-label':'Email',
+        'form-msg-label':'Message',
+        'form-submit':  'Send →',
+        'input-name':   'John Doe',
+        'input-msg':    'Hello...',
+        'footer-rights':'All rights reserved.',
+        'footer-credit':'Designed & Developed by N. Mert Guler',
+        'submit-alert': 'Message sent!',
+      },
+      tr: {
+        title:          'N. Mert Guler - Oyun Geliştirici',
+        logo:           '// N. Mert Guler',
+        'nav-about':    'Hakkımda',
+        'nav-games':    'Oyunlar',
+        'nav-contact':  'İletişim',
+        'hero-tag':     '// oyun geliştirici & tasarımcı',
+        'hero-name':    'Merhaba,<br>Ben <span class="accent-name">N. Mert Guler</span>',
+        'hero-bio':     'Yıllar boyunca, oyun geliştirmeye olan tutkumla farklı türlerde oyunlar geliştirdim. Mekanik tasarımından seviye tasarımına, kodlamadan hikaye anlatımına kadar bir oyunun her katmanına dokunmayı seviyorum.',
+        'cta-primary':  'Oyunlarımı Gör →',
+        'cta-ghost':    'İletişime Geç',
+        'lbl-about':    '// 001 — hakkımda',
+        'ttl-about':    'Biraz Kendimden',
+        'about-p1':     '2021 yılından beri oyun geliştiriyorum. Oyun geliştirmenin her aşamasında yer aldım ve hepsinde yer almaya çalışıyorum. Amacım iyi bir oyun geliştirici olmak. Oyun geliştirmeyi ve yeni şeyler denemeyi seviyorum.',
+        'about-p2':     'Hem teknik hem de yaratıcı yönleri birlikte yönetmeyi tercih ediyorum. Kod yazarken tasarımı düşünüyorum; tasarım yaparken de kodu düşünüyorum. Bu disiplinler arası bakış açısı, oyunlarımı şekillendiren en önemli unsur.',
+        'lbl-games':    '// 002 — projeler',
+        'ttl-games':    'Oyunlarım',
+        'g1-thumb':     'ADD SCREENSHOT / COVER',
+        'g1-desc':      'Sektördeki ilk "screw puzzle" örneklerinden biri olan bu proje, 15 farklı etkileşimli öge ve özel bir editörle tasarlanmış 250 seviyeden oluşur. Henüz yayınlanmadan organik ilgi görerek türün standartlarını belirlemiş ve sektöre yeni bir mekanik kazandırmıştır.',
+        'g2-thumb':     'ADD SCREENSHOT / COVER',
+        'g2-desc':      '6 aylık geliştirme süreci sonunda 100.000+ indirmeye ulaşan, 300+ seviye ve 30+ mekanik içeren proje. Geliştirme aşamalarının tamamında yer aldım; yayın sonrası ana geliştirici olarak yayıncıyla iletişimi ve teknik/operasyonel güncellemeleri yönettim.',
+        'g3-thumb':     'ADD SCREENSHOT / COVER',
+        'g3-desc':      'Gizli nesne türünü 3D ortamda yeniden yorumlayan bir deneme projesidir. Tüm yazılım geliştirme ve oyun tasarımı süreçlerini üstlendim; derinlik ve perspektif odaklı mekanikler ile kullanıcı etkileşimlerini prototipledim.',
+        'g4-thumb':     'ADD SCREENSHOT / COVER',
+        'g4-desc':      'Oyun fikri, ilerleyiş kurgusu ve seviye tasarımlarını bireysel olarak hazırladım. Modelleme aşaması için gerekli tüm sanat referanslarını ve görsel konseptleri belirledim.Geniş ölçekli bir harita üzerinde Unity DOTS mimarisiyle optimize edilmiş yaya sistemi geliştirdim. Büyük harita optimizasyonu ve çevre tasarımının yanı sıra; sürüş mekanikleri, yolcu sistemleri ve temel oynanış ögelerinin kodlanmasından sorumluydum.',
+        'g5-thumb':     'ADD SCREENSHOT / COVER',
+        'g5-desc':      'Oyun fikri, ilerleyiş kurgusu ve seviye tasarımlarını bireysel olarak hazırladım. Modelleme süreci için gerekli tüm sanat referanslarını ve görsel konseptleri uçtan uca geliştirdim.',
+        'g6-thumb':     'ADD SCREENSHOT / COVER',
+        'g6-desc':      'Oyun fikri, ilerleyiş kurgusu ve seviye tasarımlarını bireysel olarak hazırladım. Modelleme süreci için gerekli tüm görsel konseptleri ve sanat referanslarını uçtan uca geliştirdim.',
+        'g7-thumb':     'ADD SCREENSHOT / COVER',
+        'g7-desc':      'Oyun fikri, ilerleyiş kurgusu ve seviye tasarımlarını bireysel olarak hazırladım. Modelleme süreci için gerekli tüm sanat referanslarını ve görsel konseptleri uçtan uca geliştirdim.',
+        'g8-thumb':     'ADD SCREENSHOT / COVER',
+        'g8-desc':      'Oyun fikri, ilerleyiş kurgusu ve seviye tasarımlarını bireysel olarak hazırladım. Modelleme süreci için gerekli tüm sanat referanslarını ve görsel konseptleri uçtan uca geliştirdim.',
+        'g9-thumb':     'ADD SCREENSHOT / COVER',
+        'g9-desc':      ' Fikir, sanat ve pazarlama süreçlerini tek başıma yönettiğim projemdir. Geliştirme sürecini kullanıcı geri bildirimleri ve topluluk yönetimi doğrultusunda güncellemelerle sürdürdüm.',
+        'lbl-contact':  '// 003 — iletişim',
+        'ttl-contact':  'Bana Ulaşın',
+        'contact-intro':'Proje teklifleri, iş birlikleri veya oyun konuşmak için mesaj atmaktan çekinmeyin.',
+        'form-name-label':'Adınız',
+        'form-email-label':'E-posta',
+        'form-msg-label':'Mesajınız',
+        'form-submit':  'Gönder →',
+        'input-name':   'Ad Soyad',
+        'input-msg':    'Merhaba...',
+        'footer-rights':'Tüm hakları saklıdır.',
+        'footer-credit':'Tasarlandı & Geliştirildi — N. Mert Guler tarafından',
+        'submit-alert': 'Form gönderildi!',
+      }
+    };
+
+    let currentLang = 'en';
+
+    function setLang(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.title = T[lang].title;
+
+      // Toggle buttons
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === lang);
+      });
+
+      // Logo
+      document.getElementById('nav-logo').textContent = T[lang].logo;
+
+      // All ID-keyed elements
+      const htmlIds = ['hero-name'];
+      const textIds = Object.keys(T[lang]).filter(k => !['title','logo','submit-alert','input-name','input-msg'].includes(k) && !htmlIds.includes(k));
+
+      textIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = T[lang][id];
+      });
+
+      // innerHTML for hero-name (has <br> and <span>)
+      const heroNameEl = document.getElementById('hero-name');
+      if (heroNameEl) {
+        heroNameEl.innerHTML = T[lang]['hero-name'];
+        // Re-apply accent styles
+        const accentSpan = heroNameEl.querySelector('.accent-name');
+        if (accentSpan) { accentSpan.style.color = 'var(--accent)'; accentSpan.style.display = 'inline-block'; }
+      }
+
+      // Placeholders
+      document.getElementById('input-name').placeholder = T[lang]['input-name'];
+      document.getElementById('input-msg').placeholder  = T[lang]['input-msg'];
+    }
+
+    function handleSubmit() {
+      alert(T[currentLang]['submit-alert']);
+    }
+
+    /* ─────────────── SCROLL REVEAL ─────────────── */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    /* ─────────────── ACTIVE NAV ─────────────── */
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks  = document.querySelectorAll('.nav-links a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) current = sec.getAttribute('id');
+      });
+      navLinks.forEach(a => {
+        const href = a.getAttribute('href').replace('#', '');
+        a.style.color = href === current ? 'var(--accent)' : '';
+      });
+    });
+  </script>
+</body>
+</html>
